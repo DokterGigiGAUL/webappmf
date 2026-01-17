@@ -98,7 +98,7 @@ const kategori = document.getElementById('kategori').value;
 const keterangan = document.getElementById('keterangan').value || "-";
 
 // Format pesan untuk Telegram
-const pesan = `${nominal} ${kategori} ${keterangan}`;
+const pesan = "${nominal} ${kategori} ${keterangan}";
 
 const url = `https://api.telegram.org/bot${token}/sendMessage`;
 
@@ -108,8 +108,7 @@ method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({
 chat_id: chatId,
-text: pesan,
-parse_mode: "Markdown"
+text: pesan
 })
 });
 
