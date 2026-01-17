@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Input Finansial Manual</title>
+<style>
+body { font-family: 'Inter', 'Helvetica Neue', 'Helvetica', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding-top: 50px; }
+.card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+
+/* Indikator Langkah */
+.steps-info { font-size: 12px; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+.step { display: none; animation: slideIn 0.3s ease-out; }
+.step.active { display: block; }
+
+label { display: block; margin-bottom: 15px; font-size: 34px; line-height: 1.25em; font-weight: bold; color: #333; }
+input { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #eee; border-radius: 12px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
+input:focus { border-color: #0088cc; outline: none; background: #fcfcfc; }
+
+.btn-group { display: flex; gap: 10px; }
+button { flex: 1; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
+.btn-next { background: #0088cc; color: white; }
+.btn-next:active { transform: scale(0.98); }
+.btn-prev { background: #f0f0f0; color: #666; }
+
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+.card{margin:auto;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h1>Manajemen Finansial</h1>
+<p>Catatan pemasukan/pengeluaran</p>
+<div class="step active" id="step1">
+<label>Berapa Nominalnya?</label>
+<div class="steps-info"></div>
+<input type="number" id="nominal" placeholder="Pemasukan/ Pengeluaran" autofocus>
+<button class="btn-next" onclick="goToStep(2)">Berikutnya</button>
+</div>
+
+<div class="step" id="step2">
+<label>Apa Kategorinya?</label>
+<div class="steps-info"></div>
+<input type="text" id="kategori" placeholder="Gunakan #hashtag">
+<div class="btn-group">
+<button class="btn-prev" onclick="goToStep(1)">Kembali</button>
+<button class="btn-next" onclick="goToStep(3)">Berikutnya</button>
+</div>
+</div>
+
+<div class="step" id="step3">
+<label>Tambahkan Keterangan</label>
+<div class="steps-info"></div>
+<input type="text" id="keterangan" placeholder="Pisahkan, dengan, koma">
+<div class="btn-group">
+<button class="btn-prev" onclick="goToStep(2)">Kembali</button>
+<button class="btn-next" style="background: #28a745;" onclick="kirimData()">Kirim</button>
+</div>
+</div>
+</div>
+
+<script>
+function goToStep(stepNumber) {
+// Validasi simpel agar tidak kosong saat lanjut
+if (stepNumber === 2 && !document.getElementById('nominal').value) return alert("Isi nominal dulu!");
+if (stepNumber === 3 && !document.getElementById('kategori').value) return alert("Isi kategori dulu!");
+
+// Sembunyikan semua step
+document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+
+// Tampilkan step tujuan
+const targetStep = document.getElementById('step' + stepNumber);
+targetStep.classList.add('active');
+
+// Auto focus pada input di step tersebut
+targetStep.querySelector('input').focus();
+}
+
+async function kirimData() {
+const token = "8564725142:AAGVDtDFXFC8G2ggFUeSIKLAlrXZ11vtH88";
+const chatId = "6904834579";
+
+const nominal = document.getElementById('nominal').value;
+const kategori = document.getElementById('kategori').value;
+const keterangan = document.getElementById('keterangan').value || "-";
+
+// Format pesan untuk Telegram
+const pesan = `${nominal} ${kategori} ${keterangan}`;
+
+const url = `https://api.telegram.org/bot${token}/sendMessage`;
+
+try {
+const response = await fetch(url, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+chat_id: chatId,
+text: pesan,
+parse_mode: "Markdown"
+})
+});
+
+if (response.ok) {
+alert("Data Berhasil Dikirim!");
+window.location.reload(); // Reset form otomatis
+} else {
+alert("Gagal. Pastikan Token & Chat ID benar.");
+}
+} catch (e) {
+alert("Terjadi kesalahan jaringan.");
+}
+}
+</script>
+
+</body>
+</html>
